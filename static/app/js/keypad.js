@@ -1,4 +1,10 @@
 $(document).ready(function() {
+    setTimeout(hide_errors, 10000);
+
+    function hide_errors() {
+        $('#error_wrapper').slideUp();
+    }
+
     let new_pin_value
     $('.keypad-button').click(function(e) {
         e.preventDefault();

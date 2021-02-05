@@ -1,11 +1,22 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <form action="" method="post">
+    <form action="{% url 'home' %}" method="post">
         {% csrf_token %}
+        {% if form.pin.errors %}
+        <div class="row mb-3 justify-content-center" id="error_wrapper">
+            <div class="col-sm-12 col-md-6 text-danger">
+                <ul class="list-unstyled">
+                {% for error in form.pin.errors %}
+                    <li><span class="oi" data-glyph="warning"></span> {{ error }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
         <div class="row mb-3 justify-content-center">
             <div class="col-sm-12 col-md-6">
-                <input type="password" class="form-control form-control-lg p-4 text-center" id="pin" placeholder="Account PIN">
+                {{ form.pin }}
             </div>
         </div>
         <div class="row mb-3">

@@ -18,5 +18,6 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('timesheet', views.timesheet, name="timesheet")
+    path('timesheet', views.timesheet, name="timesheet"),
+    path('logout', views.logout, name="logout"),
 ]
