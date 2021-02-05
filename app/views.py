@@ -23,11 +23,9 @@ def secure_page(request):
             return True
         else:
             del request.session['u']
-            return redirect('home')
+            return False
     except Exception as e:
         print(e)
-
-    return redirect('home')
 
 
 def home(request):
@@ -57,7 +55,7 @@ def home(request):
     return render(request, 'home.html', context=context)
 
 
-@secure_page
+#@secure_page
 def timesheet(request):
 
     context = {
