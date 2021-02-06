@@ -1,0 +1,38 @@
+<form action="{% url 'create_user' %}" method="post">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <label for="first_name" class="form-label">{{ form.first_name.label }}</label>
+            <input type="text" id="first_name" name="first_name" class="form-control {% if form.first_name.errors %}border-danger{% endif %}">
+            {% if form.first_name.errors %}
+                {% for error in form.first_name.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+            <div class="form-text">{{ form.first_name.help_text }}</div>
+        </div>
+        <div class="col-12 mb-3">
+            <label for="last_name" class="form-label">{{ form.last_name.label }}</label>
+            <input type="text" id="last_name" name="last_name" class="form-control">
+            {% if form.last_name.errors %}
+                {% for error in form.first_name.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+            <div class="form-text">{{ form.last_name.help_text }}</div>
+        </div>
+        <div class="col-12 mb-3">
+            <label for="pin" class="form-label">{{ form.pin.label }} {{ form.pin.required }}</label>
+            <input type="text" id="pin" name="pin" class="form-control">
+            {% if form.pin.errors %}
+                {% for error in form.pin.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+            <div class="form-text">{{ form.pin.help_text }}</div>
+        </div>
+        <div class="col-12 mb-3 text-center">
+            {% csrf_token %}
+            <input type="submit"  class="btn btn-dark btn-lg right" value="Create New User">
+        </div>
+    </div>
+</form>

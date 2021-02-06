@@ -3,3 +3,7 @@ body {
     background-color: #ced8db;
     min-width:300px;
 }
+
+.keyboard > button {
+    font-size:4em;
+}

@@ -12,15 +12,7 @@ class LoginForm(forms.Form):
     }), label=None, validators=[numeric])
 
 
-class UserForm(forms.Form):
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        pin = cleaned_data['pin']
-
-        if pin and User.objects.get(pin=pin):
-            raise forms.ValidationError("not unique")
-
-        # Always return the full collection of cleaned data.
-        return cleaned_data
-    
+class CreateUserForm(forms.Form):
+    first_name = forms.CharField(strip=True, required=True)
+    last_name = forms.CharField(strip=True, required=True)
+    pin = forms.CharField(strip=True, required=True, validators=[numeric], help_text="Numeric values only")

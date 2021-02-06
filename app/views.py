@@ -3,29 +3,29 @@ from . forms import LoginForm
 from . models import User
 from hashlib import sha256
 from django.core import serializers
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from .forms import CreateUserForm
 
 
-def logout(request):
-    try:
-        del request.session['user']
-    except Exception as e:
-        print(e)
-
+def logout_user(request):
+    logout(request)
     return redirect('home')
 
 
-def secure_page(request):
-    try:
-        session_user = serializers.deserialize('json', request.session.get('u'))
-        print(session_user)
-        user = User.objects.filter(pin=session_user.pin).first()
-        if user:
-            return True
-        else:
-            del request.session['u']
-            return False
-    except Exception as e:
-        print(e)
+def create_user(request):
+    form = CreateUserForm
+    if request.method == "POST":
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            print(data)
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'create_user.html', context=context)
 
 
 def home(request):
@@ -55,7 +55,7 @@ def home(request):
     return render(request, 'home.html', context=context)
 
 
-#@secure_page
+@login_required(login_url='/')
 def timesheet(request):
 
     context = {
