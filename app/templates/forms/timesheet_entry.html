@@ -1,0 +1,19 @@
+{% load crispy_forms_tags %}
+
+<form action="" method="post">
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            {{ form.project | as_crispy_field }}
+        </div>
+        <div class="col-sm-12 col-md-6">
+            {{ form.time_worked | as_crispy_field }}
+        </div>
+        <div class="col-12">
+            {% include 'tools/keypad.html' %}
+        </div>
+        <div class="col-12 text-center">
+            <input type="submit" value="Submit" class="btn btn-lg btn-dark">
+        </div>
+        {% csrf_token %}
+    </div>
+</form>

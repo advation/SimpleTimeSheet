@@ -5,7 +5,7 @@
         {% csrf_token %}
         {% if form.pin.errors %}
         <div class="row mb-3 justify-content-center" id="error_wrapper">
-            <div class="col-sm-12 col-md-6 text-danger">
+            <div class="col-sm-12 text-danger text-center">
                 <ul class="list-unstyled">
                 {% for error in form.pin.errors %}
                     <li><span class="oi" data-glyph="warning"></span> {{ error }}</li>
@@ -15,7 +15,7 @@
         </div>
         {% endif %}
         <div class="row mb-3 justify-content-center">
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12">
                 {{ form.pin }}
             </div>
         </div>
