@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from . forms import LoginForm, CreateUserForm, TimeEntryForm, SettingsForm
+from django.core.validators import ValidationError
 from . models import User, Setting, Entry
 from hashlib import sha256
 import datetime
@@ -133,18 +134,21 @@ def timesheet(request):
 
     if request.method == "POST":
         form = TimeEntryForm(request.POST)
+
         if form.is_valid():
             data = form.cleaned_data
-            print(data)
-            entry = Entry()
-            entry.user = user
-            entry.project = data['project']
-            entry.date = datetime.datetime.now().date()
-            entry.hours = data['hours']
-            entry.minutes = data['minutes']
-            entry.save()
-
-            form = TimeEntryForm()
+            if data['hours'] == '0' and data['minutes'] == '0':
+                form.add_error('hours', 'May not be 0 if minutes is 0')
+                form.add_error('minutes', 'May not be 0 if hours is 0')
+            else:
+                entry = Entry()
+                entry.user = user
+                entry.project = data['project']
+                entry.date = datetime.datetime.now().date()
+                entry.hours = data['hours']
+                entry.minutes = data['minutes']
+                entry.save()
+                form = TimeEntryForm()
 
     entries = Entry.objects.filter(user__id=uid)
 
@@ -153,6 +157,7 @@ def timesheet(request):
     for entry in entries:
         time_worked = float(entry.hours) + float(entry.minutes)
         e = {
+            'id': entry.id,
             'date': entry.date,
             'hours': entry.hours,
             'minutes': entry.minutes,

@@ -1,11 +1,27 @@
 from django import forms
-from django.core.validators import RegexValidator, MaxLengthValidator
+from django.core.validators import RegexValidator, MaxLengthValidator, MinLengthValidator, ValidationError
 from . models import Project, Setting
 
 numeric = RegexValidator(r'^[0-9+]', 'Only numeric characters.')
-time_max_length = MaxLengthValidator(4, 'Length limit exceeds 4 characters')
-max_daily_hours_length = MaxLengthValidator(2, 'Only 2 place values allowed')
-session_timeout_length = MaxLengthValidator(4, 'Only 4 place values allowed')
+time_max_length = MaxLengthValidator(4, 'Length limit exceeds 4 characters.')
+max_daily_hours_length = MaxLengthValidator(2, 'Only 2 place values allowed.')
+session_timeout_length = MaxLengthValidator(4, 'Only 4 place values allowed.')
+min_pin_length = MinLengthValidator(4, 'Must be at least 4 characters long.')
+max_pin_length = MaxLengthValidator(4, 'May not be longer then 4 characters long.')
+
+
+def pin_blacklist(value):
+    blacklist = ['1234', '4321', '0000', '1111',
+                 '2222', '3333', '4444', '5555',
+                 '6666', '7777', '8888', '9999',
+                 '2345', '5432', '3456', '6543',
+                 '4567', '7654', '5678', '8765',
+                 '6789', '9876', '7890', '0987']
+    if value in blacklist:
+        raise ValidationError("Please provide a more complex PIN")
+    else:
+        return value
+
 
 hours = []
 try:
@@ -37,21 +53,17 @@ class LoginForm(forms.Form):
 class CreateUserForm(forms.Form):
     first_name = forms.CharField(strip=True, required=True)
     last_name = forms.CharField(strip=True, required=True)
-    pin = forms.CharField(strip=True, required=True, validators=[numeric], help_text="Numeric values only")
+    pin = forms.CharField(strip=True, required=True, validators=[numeric, min_pin_length, max_pin_length, pin_blacklist],
+                          help_text="4 character numeric PIN")
 
 
 class TimeEntryForm(forms.Form):
-    project = forms.ModelChoiceField(Project.objects.all(), required=False, widget=forms.Select(attrs={
-        'class': 'form-control form-control-lg'
-    }))
-
-    hours = forms.ChoiceField(required=True, choices=hours, widget=forms.Select(attrs={
-        'class': 'form-control form-control-lg',
-    }))
-
-    minutes = forms.ChoiceField(required=True, choices=minutes, widget=forms.Select(attrs={
-        'class': 'form-control form-control-lg',
-    }))
+    project = forms.ModelChoiceField(Project.objects.all(), required=False, label="Select a project if applicable (not required)",
+                                     widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
+    hours = forms.ChoiceField(required=True, choices=hours,
+                              widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
+    minutes = forms.ChoiceField(required=True, choices=minutes,
+                                widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
 
 
 class SettingsForm(forms.Form):

@@ -23,6 +23,7 @@
             </div>
         </div>
     </div>
+    {% if entries %}
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -31,35 +32,69 @@
                         <div class="col-sm-6">
                             <h3>Total Time Worked</h3>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3 text-center">
                             <h3>{{ total_time_worked }}</h3>
                         </div>
+                        <div class="col-sm-3 text-end">
+                            <a href="#!" class="btn btn-dark"><span class="oi" data-glyph="print"></span></a>
+                        </div>
                     </div>
-                    <div class="row">
-                        <div class="col-4">
+                    <div class="row mb-2">
+                        <div class="col-sm-4 col-md-3">
                             <b>Date</b>
                         </div>
-                        <div class="col-4">
-                            <b>Time Worked</b>
+                        <div class="col-sm-4 col-md-2">
+                            <b>Hours</b>
                         </div>
-                        <div class="col-4">
+                        <div class="d-sm-none d-md-block col-md-3">
                             <b>Project</b>
                         </div>
+                        <div class="col-md-4 text-end">
+
+                        </div>
                     </div>
+
                     {% for entry in entries %}
-                        <div class="row report-row p-3">
-                            <div class="col-sm-12 col-md-4">
+                        <div class="row report-row pb-3 pt-3">
+                            <div class="col-sm-12 col-md-3">
                                 {{ entry.date }}
                             </div>
-                            <div class="col-sm-6 col-md-4">
+                            <div class="col-sm-6 col-md-2">
                                 {{ entry.time_worked }}
                             </div>
-                            <div class="col-sm-6 col-md-4">
+                            <div class="col-md-3">
                                 {% if entry.project %}
                                     {{ entry.project.name }}
                                 {% else %}
                                     -
                                 {% endif %}
+                            </div>
+                            <div class="col-sm-6 col-md-4 text-end">
+                                <a href="#!" class="btn btn-secondary"><span class="oi" data-glyph="pencil"></span></a>
+                                <a href="#!" data-bs-toggle="modal" data-bs-target="#entry-{{ entry.id }}" class="btn btn-danger"><span class="oi" data-glyph="trash"></span></a>
+                            </div>
+                            <div class="modal fade" id="entry-{{ entry.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Removal Confirmation</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                      <div class="row">
+                                          <div class="col-12 lead mb-3 text-center">
+                                              Remove {{ entry.time_worked }} hours worked on {{ entry.date }}.
+                                          </div>
+                                          <div class="col-sm-12 col-md-6">
+                                              <button type="button" class="btn btn-lg form-control btn-secondary" data-bs-dismiss="modal">No</button>
+                                          </div>
+                                          <div class="col-sm-12 col-md-6">
+                                              <button type="button" class="btn btn-lg form-control btn-dark">Yes</button>
+                                          </div>
+                                      </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                         </div>
                     {% endfor %}
@@ -67,5 +102,5 @@
             </div>
         </div>
     </div>
-
+    {% endif %}
 {% endblock %}

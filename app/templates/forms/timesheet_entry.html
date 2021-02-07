@@ -2,16 +2,16 @@
 
 <form action="{% url 'timesheet' %}" method="post">
     <div class="row">
-        <div class="col-sm-12 col-md-12">
-            {{ form.project | as_crispy_field }}
-        </div>
-        <div class="col-sm-12 col-md-4">
+        <div class="col-sm-12 col-md-6">
             {{ form.hours | as_crispy_field }}
         </div>
-        <div class="col-sm-12 col-md-4">
+        <div class="col-sm-12 col-md-6">
             {{ form.minutes | as_crispy_field }}
         </div>
-        <div class="col-sm-12 col-md-4">
+        <div class="col-sm-12 col-md-6">
+            {{ form.project | as_crispy_field }}
+        </div>
+        <div class="col-sm-12 col-md-6">
             <label class="form-label">&nbsp;</label>
             <input type="submit" value="Submit" class="form-control form-control-lg btn btn-lg btn-dark">
         </div>
