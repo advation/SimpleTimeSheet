@@ -104,7 +104,7 @@ def home(request):
         if form.is_valid():
             data = form.cleaned_data
             pin = sha256(data['pin'].encode('utf-8')).hexdigest()
-            user = User.objects.filter(pin=pin).first()
+            user = User.objects.filter(pin=pin, status=True).first()
             if user is None:
                 form.add_error('pin', 'Invalid login')
                 login_error = True

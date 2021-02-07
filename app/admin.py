@@ -17,7 +17,9 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Entry)
 class EntryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['user', 'date', 'hours', 'minutes']
+    search_fields = ('user', 'date')
+    ordering = ['user', 'date']
 
 
 @admin.register(EntryNote)
