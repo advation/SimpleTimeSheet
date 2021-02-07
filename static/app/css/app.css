@@ -7,3 +7,7 @@ body {
 .keyboard > button {
     font-size:4em;
 }
+
+.report-row:nth-of-type(odd) {
+    background: #e0e0e0;
+}

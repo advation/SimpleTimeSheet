@@ -37,12 +37,28 @@ class Project(models.Model):
 
 
 class Entry(models.Model):
-    user_id = models.IntegerField(blank=False, editable=False)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None, null=True)
     date = models.DateField(blank=False)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True)
-    time_worked = models.CharField(max_length=4, default=0, blank=False)
-    note = models.TextField(blank=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True)
+    hours = models.CharField(max_length=2, default=0, blank=False)
+    minutes = models.CharField(max_length=4, default=0, blank=False)
 
+    def __str__(self):
+        return "%s, %s %s" % (self.date, self.user.last_name, self.user.first_name)
+
+    class Meta:
+        verbose_name_plural = "Time Entries"
+
+
+class EntryNote(models.Model):
+    entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+    note = models.TextField(blank=False)
+
+    def __str__(self):
+        return "%s %s, %s - %s" % (self.entry.date, self.entry.user.last_name, self.entry.user.first_name, self.note)
+
+    class Meta:
+        verbose_name_plural = "Time Entry Notes"
 
 class Message(models.Model):
     message = models.TextField(blank=False)
@@ -51,3 +67,11 @@ class Message(models.Model):
 
     def __str__(self):
         return "%s" % (self.message,)
+
+
+class Setting(models.Model):
+    setting = models.CharField(max_length=255, blank=False, default="")
+    value = models.CharField(max_length=255, blank=False, default="")
+
+    def __str__(self):
+        return "%s" % (self.setting,)

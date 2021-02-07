@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import User, Project, Message, Entry
+from . models import User, Project, Message, Entry, Setting, EntryNote
 # Register your models here.
 
 
@@ -20,6 +20,18 @@ class EntryAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(EntryNote)
+class EntryNoteAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(Setting)
+class SettingAdmin(admin.ModelAdmin):
+    readonly_fields = ['setting']
+    ordering = ['setting']
+    list_display = ['setting', 'value']
