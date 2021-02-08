@@ -14,15 +14,33 @@
             <a href="{% url 'logout' %}" class="btn btn-lg btn-danger"><span class="oi" data-glyph="account-logout"></span></a>
         </div>
     </div>
+
+    {% if max_daily_entries_quota == False %}
     <div class="row mb-3">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    {% include 'forms/timesheet_entry.html' %}
+                    {% if projects == "True" %}
+                        {% include 'forms/timesheet_entry_projects.html' %}
+                    {% else %}
+                        {% include 'forms/timesheet_entry.html' %}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+    {% else %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <p class="lead"><span class="oi" data-glyph="warning"></span> Maximum daily entries met.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {% if entries %}
     <div class="row">
         <div class="col-12">
@@ -47,7 +65,9 @@
                             <b>Hours</b>
                         </div>
                         <div class="d-sm-none d-md-block col-md-3">
+                            {% if projects == "True" %}
                             <b>Project</b>
+                            {% endif %}
                         </div>
                         <div class="col-md-4 text-end">
 
@@ -63,10 +83,12 @@
                                 {{ entry.time_worked }}
                             </div>
                             <div class="col-md-3">
-                                {% if entry.project %}
-                                    {{ entry.project.name }}
-                                {% else %}
-                                    -
+                                {% if projects == "True" %}
+                                    {% if entry.project %}
+                                        {{ entry.project.name }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
                                 {% endif %}
                             </div>
                             <div class="col-sm-6 col-md-4 text-end">

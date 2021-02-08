@@ -58,8 +58,13 @@ def setup(request):
             s.save()
 
             s = Setting()
-            s.setting = 'Allow Entry Edit'
-            s.value = data['allow_entry_edit']
+            s.setting = 'Max Daily Entries'
+            s.value = data['max_daily_entries']
+            s.save()
+
+            s = Setting()
+            s.setting = 'Projects'
+            s.value = data['projects']
             s.save()
 
             return redirect('home')
@@ -130,6 +135,8 @@ def timesheet(request):
     uid = request.session.get('uid')
     user = get_user(uid)
 
+    projects = Setting.objects.get(setting='Projects')
+
     form = TimeEntryForm()
 
     if request.method == "POST":
@@ -150,7 +157,16 @@ def timesheet(request):
                 entry.save()
                 form = TimeEntryForm()
 
-    entries = Entry.objects.filter(user__id=uid)
+    entries = Entry.objects.filter(user=user, date__month=datetime.datetime.now().month)
+
+    date = datetime.datetime.now()
+    max_daily_entries = Setting.objects.get(setting='Max Daily Entries')
+    todays_entries = Entry.objects.filter(user=user, date=date).count()
+
+    max_daily_entries_quota = False
+
+    if int(todays_entries) >= int(max_daily_entries.value):
+        max_daily_entries_quota = True
 
     time_entries = list()
     total_time_worked = 0
@@ -172,6 +188,8 @@ def timesheet(request):
         'form': form,
         'entries': time_entries,
         'total_time_worked': total_time_worked,
+        'max_daily_entries_quota': max_daily_entries_quota,
+        'projects': projects.value,
     }
 
     return render(request, 'timesheet.html', context=context)

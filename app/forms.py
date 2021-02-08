@@ -35,7 +35,7 @@ except Exception as e:
 
 
 minutes = (
-    ('0', '0'),
+    ('0', '00'),
     ('0.25', '15'),
     ('0.50', '30'),
     ('0.75', '45')
@@ -58,8 +58,10 @@ class CreateUserForm(forms.Form):
 
 
 class TimeEntryForm(forms.Form):
-    project = forms.ModelChoiceField(Project.objects.all(), required=False, label="Select a project if applicable (not required)",
+    project = forms.ModelChoiceField(Project.objects.all(), required=False,
+                                     label="Select a project if applicable (not required)",
                                      widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
+
     hours = forms.ChoiceField(required=True, choices=hours,
                               widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
     minutes = forms.ChoiceField(required=True, choices=minutes,
@@ -68,6 +70,10 @@ class TimeEntryForm(forms.Form):
 
 class SettingsForm(forms.Form):
     max_daily_hours = forms.CharField(required=True, validators=[max_daily_hours_length])
+    max_daily_entries = forms.CharField(required=True)
     session_timeout = forms.CharField(required=True, validators=[session_timeout_length])
-    allow_entry_edit = forms.BooleanField(required=True)
+    projects = forms.BooleanField(required=False, label="Enable Projects",
+                                  help_text="Allows for time entries to be attached to projects.")
+
+
 
