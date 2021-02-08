@@ -93,8 +93,10 @@ def create_user(request):
             else:
                 form.add_error('pin', 'PIN already exists')
 
+    auth_timeout = int(Setting.objects.get(setting="Session Timeout").value) * 60
     context = {
-        'form': form
+        'form': form,
+        'auth_timeout': auth_timeout
     }
 
     return render(request, 'create_user.html', context=context)
@@ -183,6 +185,8 @@ def timesheet(request):
         time_entries.append(e)
         total_time_worked = float(total_time_worked) + time_worked
 
+    auth_timeout = int(Setting.objects.get(setting="Session Timeout").value) * 60
+
     context = {
         'user': user,
         'form': form,
@@ -190,6 +194,7 @@ def timesheet(request):
         'total_time_worked': total_time_worked,
         'max_daily_entries_quota': max_daily_entries_quota,
         'projects': projects.value,
+        'session_timeout': auth_timeout
     }
 
     return render(request, 'timesheet.html', context=context)
@@ -206,3 +211,55 @@ def remove(request, entry_id):
     entry = Entry.objects.filter(id=entry_id, user=user)
     entry.delete()
     return redirect('timesheet')
+
+
+def edit(request, entry_id):
+    if requires_auth(request) is False:
+        request.session['authenticated'] = False
+        return redirect('home')
+
+    uid = request.session.get('uid')
+    user = get_user(uid)
+
+    form = TimeEntryForm()
+
+    if request.method == "POST":
+        form = TimeEntryForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            if data['hours'] == '0' and data['minutes'] == '0':
+                form.add_error('hours', 'Hours and Minutes may not be both 0')
+                form.add_error('minutes', 'Hours and Minutes may not be both 0')
+            else:
+                entry = Entry.objects.filter(id=entry_id, user=user).first()
+                entry.hours = data['hours']
+                entry.minutes = data['minutes']
+                entry.project = data['project']
+                entry.save()
+
+                return redirect('timesheet')
+
+    entry = Entry.objects.filter(id=entry_id, user=user).first()
+    projects = Setting.objects.get(setting="Projects")
+    auth_timeout = int(Setting.objects.get(setting="Session Timeout").value) * 60
+
+    if entry:
+        form.fields['hours'].initial = entry.hours
+        form.fields['minutes'].initial = entry.minutes
+        if projects.value == "True":
+            form.fields['project'].initial = entry.project
+        else:
+            del form.fields['project']
+    else:
+        return redirect('timesheet')
+
+    context = {
+        'form': form,
+        'user': user,
+        'entry': entry,
+        'projects': projects.value,
+        'session_timeout': auth_timeout
+    }
+
+    return render(request, 'edit.html', context=context)
+

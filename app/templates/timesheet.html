@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout_auth.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
 
@@ -34,7 +34,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body text-center">
-                    <p class="lead"><span class="oi" data-glyph="warning"></span> Maximum daily entries met.</p>
+                    <p class="lead pt-1"><span class="oi" data-glyph="warning"></span> Maximum daily entries met.</p>
                 </div>
             </div>
         </div>
@@ -92,7 +92,7 @@
                                 {% endif %}
                             </div>
                             <div class="col-sm-6 col-md-4 text-end">
-                                <a href="#!" class="btn btn-secondary"><span class="oi" data-glyph="pencil"></span></a>
+                                <a href="{% url 'edit_entry' entry_id=entry.id %}" class="btn btn-secondary"><span class="oi" data-glyph="pencil"></span></a>
                                 <a href="#!" data-bs-toggle="modal" data-bs-target="#entry-{{ entry.id }}" class="btn btn-danger"><span class="oi" data-glyph="trash"></span></a>
                             </div>
                             <div class="modal fade" id="entry-{{ entry.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

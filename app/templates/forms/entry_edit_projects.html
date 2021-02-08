@@ -1,0 +1,22 @@
+{% load crispy_forms_tags %}
+
+<form action="{% url 'edit_entry' entry_id=entry.id %}" method="post">
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            {{ form.hours | as_crispy_field }}
+        </div>
+        <div class="col-sm-12 col-md-6">
+            {{ form.minutes | as_crispy_field }}
+        </div>
+        <div class="col-sm-12 col-md-6">
+            {{ form.project | as_crispy_field }}
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <label class="form-label">&nbsp;</label>
+            <input type="submit" value="Submit" class="form-control form-control-lg btn btn-lg btn-dark">
+        </div>
+        {% csrf_token %}
+    </div>
+</form>
+
+

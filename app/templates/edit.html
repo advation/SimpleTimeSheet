@@ -1,0 +1,27 @@
+{% extends 'layout_auth.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+    <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 col-lg-6 text-sm-center text-lg-start">
+            <h2>{{ user.first_name | title }} {{ user.last_name | title }}</h2>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6 text-sm-center text-lg-end">
+            <a href="#!" class="btn btn-lg btn-secondary"><span class="oi" data-glyph="arrow-thick-left"></span> Back</a>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-sm-12 text-center">
+            <h1>{{ entry.date }}</h1>
+        </div>
+        <div class="col-sm-12">
+            {% if projects == "True" %}
+                {% include 'forms/entry_edit_projects.html' %}
+            {% else %}
+                {% include 'forms/entry_edit.html' %}
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

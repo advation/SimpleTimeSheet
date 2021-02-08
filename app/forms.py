@@ -69,11 +69,27 @@ class TimeEntryForm(forms.Form):
 
 
 class SettingsForm(forms.Form):
-    max_daily_hours = forms.CharField(required=True, validators=[max_daily_hours_length])
-    max_daily_entries = forms.CharField(required=True)
-    session_timeout = forms.CharField(required=True, validators=[session_timeout_length])
+    max_daily_hours = forms.CharField(
+        required=True,
+        validators=[max_daily_hours_length],
+        help_text="Sets the maximum hour value for the Hours select box."
+    )
+
+    max_daily_entries = forms.CharField(
+        required=True,
+        help_text="Sets the maximum number of time entries for a given calendar day."
+    )
+
+    session_timeout = forms.CharField(
+        required=True,
+        validators=[session_timeout_length],
+        label="Session Timeout (Minutes)",
+        help_text="Sets the automatic logout time limit in minutes"
+    )
+
     projects = forms.BooleanField(required=False, label="Enable Projects",
                                   help_text="Allows for time entries to be attached to projects.")
+
 
 
 
