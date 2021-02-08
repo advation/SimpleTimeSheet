@@ -193,3 +193,16 @@ def timesheet(request):
     }
 
     return render(request, 'timesheet.html', context=context)
+
+
+def remove(request, entry_id):
+    if requires_auth(request) is False:
+        request.session['authenticated'] = False
+        return redirect('home')
+
+    uid = request.session.get('uid')
+    user = get_user(uid)
+
+    entry = Entry.objects.filter(id=entry_id, user=user)
+    entry.delete()
+    return redirect('timesheet')

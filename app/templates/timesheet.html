@@ -48,10 +48,10 @@
                 <div class="card-body">
                     <div class="row mb-3 border-bottom">
                         <div class="col-sm-6">
-                            <h3>Total Time Worked</h3>
+                            <h3>Total Time Worked: {{ total_time_worked }}</h3>
                         </div>
                         <div class="col-sm-3 text-center">
-                            <h3>{{ total_time_worked }}</h3>
+
                         </div>
                         <div class="col-sm-3 text-end">
                             <a href="#!" class="btn btn-dark"><span class="oi" data-glyph="print"></span></a>
@@ -96,27 +96,27 @@
                                 <a href="#!" data-bs-toggle="modal" data-bs-target="#entry-{{ entry.id }}" class="btn btn-danger"><span class="oi" data-glyph="trash"></span></a>
                             </div>
                             <div class="modal fade" id="entry-{{ entry.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                              <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Removal Confirmation</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                  </div>
-                                  <div class="modal-body">
-                                      <div class="row">
-                                          <div class="col-12 lead mb-3 text-center">
-                                              Remove {{ entry.time_worked }} hours worked on {{ entry.date }}.
-                                          </div>
-                                          <div class="col-sm-12 col-md-6">
-                                              <button type="button" class="btn btn-lg form-control btn-secondary" data-bs-dismiss="modal">No</button>
-                                          </div>
-                                          <div class="col-sm-12 col-md-6">
-                                              <button type="button" class="btn btn-lg form-control btn-dark">Yes</button>
-                                          </div>
-                                      </div>
-                                  </div>
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Removal Confirmation</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-12 lead mb-3 text-center">
+                                                    Remove {{ entry.time_worked }} hours worked on {{ entry.date }}.
+                                                </div>
+                                                <div class="col-sm-12 col-md-6">
+                                                    <button type="button" class="btn btn-lg form-control btn-secondary" data-bs-dismiss="modal">No</button>
+                                                </div>
+                                                <div class="col-sm-12 col-md-6">
+                                                    <a href="{% url 'remove_entry' entry_id=entry.id %}" class="btn btn-lg form-control btn-dark">Yes</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                              </div>
                             </div>
                         </div>
                     {% endfor %}
