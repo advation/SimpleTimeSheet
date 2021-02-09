@@ -1,7 +1,6 @@
 from django import forms
 from django.core.validators import RegexValidator, MaxLengthValidator, MinLengthValidator, ValidationError
 from . models import Project, Setting
-from calendar import monthrange
 
 numeric = RegexValidator(r'^[0-9+]', 'Only numeric characters.')
 time_max_length = MaxLengthValidator(4, 'Length limit exceeds 4 characters.')
@@ -25,14 +24,10 @@ def pin_blacklist(value):
 
 
 hours = []
-try:
-    max_daily_hours = Setting.objects.get(setting='Max Daily Hours')
-    for hour in range(0, int(max_daily_hours.value)+1):
-        hours.append(("%i" % hour, "%i" % hour))
-except Exception as e:
-    print(e)
-    for hour in range(0, 9):
-        hours.append(("%i" % hour, "%i" % hour))
+max_daily_hours = Setting.objects.get(setting='Max Daily Hours')
+for hour in range(0, int(max_daily_hours.value)+1):
+    hours.append(("%i" % hour, "%i" % hour))
+
 
 days = (
     ('1', '1'),
