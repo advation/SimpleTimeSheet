@@ -3,7 +3,6 @@
 <form action="{% url 'timesheet' year=current_month.year month=current_month.month %}" method="post">
     <div class="row">
         <div class="col-sm-12 col-md-3">
-
             <label class="form-label" for="day_of_month">Day of month*</label>
             <select id="day_of_month" name="day_of_month" class="form-control form-control-lg">
                 <option value="-">---</option>
@@ -34,3 +33,8 @@
         {% csrf_token %}
     </div>
 </form>
+<script>
+    $(document).ready(function() {
+        console.log('test');
+    });
+</script>

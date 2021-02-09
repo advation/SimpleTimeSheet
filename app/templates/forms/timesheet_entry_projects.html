@@ -5,13 +5,23 @@
             <label class="form-label" for="day_of_month">Day of month*</label>
             <select id="day_of_month" name="day_of_month" class="form-control form-control-lg {% if form.day_of_month.errors %}is-invalid{% endif %}">
                 <option value="Blank">---</option>
-                {% for day in days_of_month %}
-                    {% if selected_day == day.day %}
-                        <option value="{{ day.day }}" selected>{{ day.label }}</option>
-                    {% else %}
-                        <option value="{{ day.day }}">{{ day.label }}</option>
-                    {% endif %}
-                {% endfor %}
+                {% if selected_day == current_month_day %}
+                    {% for day in days_of_month %}
+                        {% if current_month_day == day.day %}
+                            <option value="{{ day.day }}" selected>{{ day.label }}</option>
+                        {% else %}
+                            <option value="{{ day.day }}">{{ day.label }}</option>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {% for day in days_of_month %}
+                        {% if selected_day == day.day %}
+                            <option value="{{ day.day }}" selected>{{ day.label }}</option>
+                        {% else %}
+                            <option value="{{ day.day }}">{{ day.label }}</option>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
             </select>
             {% if form.day_of_month.errors %}
                 {% for error in form.day_of_month.errors %}
@@ -35,5 +45,15 @@
         {% csrf_token %}
     </div>
 </form>
+<script>
+    $(document).ready(function() {
+        console.log("{{ current_month_day }}");
+        {% if today_is_today %}
+            {% if selected_day is None %}
+                $('#day_of_month').val("{{ current_month_day }}");
+            {% endif %}
+        {% endif %}
+    });
+</script>
 
 

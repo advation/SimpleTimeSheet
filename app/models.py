@@ -1,11 +1,16 @@
 from django.db import models
 from hashlib import sha256
-import datetime
+import uuid
 
 levels = (
     ('1', 'Standard User'),
     ('2', 'Supervisor'),
     ('3', 'Administrator')
+)
+
+entry_status = (
+    ('current', 'Current'),
+    ('historical', 'historical')
 )
 
 
@@ -37,11 +42,15 @@ class Project(models.Model):
 
 
 class Entry(models.Model):
+    uid = models.CharField(max_length=255, blank=False, default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None, null=True)
     date = models.DateField(blank=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True)
     hours = models.CharField(max_length=2, default=0, blank=False)
     minutes = models.CharField(max_length=4, default=0, blank=False)
+    status = models.CharField(default="", max_length=255, blank=False, choices=entry_status)
+    validated = models.BooleanField(default=False)
+    approved = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s, %s %s" % (self.date, self.user.last_name, self.user.first_name)
@@ -59,6 +68,7 @@ class EntryNote(models.Model):
 
     class Meta:
         verbose_name_plural = "Time Entry Notes"
+
 
 class Message(models.Model):
     message = models.TextField(blank=False)

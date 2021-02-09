@@ -29,7 +29,7 @@ def days_of_month(year, month):
     days = []
     for day in range(1, r[1]+1):
         d = datetime.date(year, month, day)
-        days.append({'day': str(day), 'label': d.strftime('%A, %b. %d')})
+        days.append({'day': str(day), 'label': d.strftime('%B %d (%A)')})
     return days
 
 
@@ -193,8 +193,8 @@ def timesheet(request, year=None, month=None, day=None):
             data = form.cleaned_data
             if data['hours'] == '0' and data['minutes'] == '0':
                 selected_day = data['day_of_month']
-                form.add_error('hours', 'No time worked provided')
-                form.add_error('minutes', 'No time worked provided')
+                form.add_error('hours', 'No time provided')
+                form.add_error('minutes', 'No time provided')
             else:
                 entry = Entry()
                 entry.user = user
@@ -203,6 +203,10 @@ def timesheet(request, year=None, month=None, day=None):
                                            day=int(data['day_of_month']))
                 entry.hours = data['hours']
                 entry.minutes = data['minutes']
+                if current_month.year == date.year and current_month.month == date.month:
+                    entry.status = "current"
+                else:
+                    entry.status = "historical"
                 entry.save()
                 form = TimeEntryForm()
 
@@ -223,7 +227,7 @@ def timesheet(request, year=None, month=None, day=None):
     for entry in entries:
         time_worked = float(entry.hours) + float(entry.minutes)
         e = {
-            'id': entry.id,
+            'uid': entry.uid,
             'date': entry.date,
             'hours': entry.hours,
             'minutes': entry.minutes,
@@ -266,9 +270,12 @@ def remove(request, entry_id):
     uid = request.session.get('uid')
     user = get_user(uid)
 
-    entry = Entry.objects.filter(id=entry_id, user=user)
+    entry = Entry.objects.filter(uid=entry_id, user=user).first()
+    print(entry)
+    year = entry.date.year
+    month = entry.date.month
     entry.delete()
-    return redirect('timesheet')
+    return redirect('timesheet', year, month)
 
 
 def edit(request, entry_id):
@@ -286,18 +293,23 @@ def edit(request, entry_id):
         if form.is_valid():
             data = form.cleaned_data
             if data['hours'] == '0' and data['minutes'] == '0':
-                form.add_error('hours', 'Hours and Minutes may not be both 0')
-                form.add_error('minutes', 'Hours and Minutes may not be both 0')
+                form.add_error('hours', 'No time provided')
+                form.add_error('minutes', 'No time provided')
             else:
-                entry = Entry.objects.filter(id=entry_id, user=user).first()
+                entry = Entry.objects.filter(uid=entry_id, user=user).first()
+                year = entry.date.year
+                month = entry.date.month
+                entry.date = datetime.date(year=year, month=month, day=int(data['day_of_month']))
                 entry.hours = data['hours']
                 entry.minutes = data['minutes']
                 entry.project = data['project']
                 entry.save()
 
-                return redirect('timesheet')
+                return redirect('timesheet', year, month)
 
-    entry = Entry.objects.filter(id=entry_id, user=user).first()
+    entry = Entry.objects.filter(uid=entry_id, user=user).first()
+    year = entry.date.year
+    month = entry.date.month
     projects = Setting.objects.get(setting="Projects")
     auth_timeout = int(Setting.objects.get(setting="Session Timeout").value) * 60
 
@@ -309,14 +321,16 @@ def edit(request, entry_id):
         else:
             del form.fields['project']
     else:
-        return redirect('timesheet')
+        return redirect('timesheet', year, month)
 
     context = {
         'form': form,
         'user': user,
         'entry': entry,
         'projects': projects.value,
-        'session_timeout': auth_timeout
+        'session_timeout': auth_timeout,
+        'days_of_month': days_of_month(year, month),
+        'selected_day': str(entry.date.day)
     }
 
     return render(request, 'edit.html', context=context)

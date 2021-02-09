@@ -4,7 +4,7 @@
 
     <div class="row mb-3">
         <div class="col-sm-12 col-md-12 col-lg-6 text-sm-center text-lg-start">
-            <h2>{{ user.first_name | title }} {{ user.last_name | title }}</h2>
+            <h2 class="p-2"><span class="oi" data-glyph="person"></span> {{ user.first_name | title }} {{ user.last_name | title }}</h2>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6 text-sm-center text-lg-end">
             {% if user.level == '3' %}
@@ -66,12 +66,12 @@
                     {% if entries %}
                     <div class="row mb-3 border-bottom">
                         <div class="col-sm-6">
-                            <h3>Total Time Worked: {{ total_time_worked }}</h3>
+                            <h3 class="mt-2">Total Time Worked: {{ total_time_worked }}</h3>
                         </div>
                         <div class="col-sm-3 text-center">
 
                         </div>
-                        <div class="col-sm-3 text-end">
+                        <div class="col-sm-3 text-end mb-3">
                             <a href="#!" class="btn btn-lg btn-dark"><span class="oi" data-glyph="print"></span></a>
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                         <div class="col-sm-4 col-md-3">
                             <b>Date</b>
                         </div>
-                        <div class="col-sm-4 col-md-2">
+                        <div class="col-sm-4 col-md-3">
                             <b>Hours</b>
                         </div>
                         <div class="d-sm-none d-md-block col-md-3">
@@ -87,20 +87,19 @@
                             <b>Project</b>
                             {% endif %}
                         </div>
-                        <div class="col-md-4 text-end">
-
+                        <div class="col-sm-4 col-md-3">
                         </div>
                     </div>
 
                     {% for entry in entries %}
                         <div class="row report-row pb-3 pt-3">
-                            <div class="col-sm-12 col-md-3">
-                                {{ entry.date }}
+                            <div class="col-sm-6 col-md-3">
+                                {{ entry.date | date:'F jS Y (D.)'}}
                             </div>
-                            <div class="col-sm-6 col-md-2">
+                            <div class="col-sm-6 col-md-3">
                                 {{ entry.time_worked }}
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-sm-6 col-md-3">
                                 {% if projects == "True" %}
                                     {% if entry.project %}
                                         {{ entry.project.name }}
@@ -109,9 +108,13 @@
                                     {% endif %}
                                 {% endif %}
                             </div>
-                            <div class="col-sm-6 col-md-4 text-end">
-                                <a href="{% url 'edit_entry' entry_id=entry.id %}" class="btn btn-secondary"><span class="oi" data-glyph="pencil"></span></a>
-                                <a href="#!" data-bs-toggle="modal" data-bs-target="#entry-{{ entry.id }}" class="btn btn-danger"><span class="oi" data-glyph="trash"></span></a>
+                            <div class="col-sm-6 col-md-3 text-sm-start text-md-end">
+                                {% if entry.approved %}
+                                    <span class="oi text-success" data-glyph="circle-check"></span>
+                                {% else %}
+                                    <a href="{% url 'edit_entry' entry_id=entry.uid %}" class="btn btn-secondary"><span class="oi" data-glyph="pencil"></span></a>
+                                    <a href="#!" data-bs-toggle="modal" data-bs-target="#entry-{{ entry.id }}" class="btn btn-danger"><span class="oi" data-glyph="trash"></span></a>
+                                {% endif %}
                             </div>
                             <div class="modal fade" id="entry-{{ entry.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
@@ -129,7 +132,7 @@
                                                     <button type="button" class="btn btn-lg form-control btn-secondary" data-bs-dismiss="modal">No</button>
                                                 </div>
                                                 <div class="col-sm-12 col-md-6">
-                                                    <a href="{% url 'remove_entry' entry_id=entry.id %}" class="btn btn-lg form-control btn-dark">Yes</a>
+                                                    <a href="{% url 'remove_entry' entry_id=entry.uid %}" class="btn btn-lg form-control btn-dark">Yes</a>
                                                 </div>
                                             </div>
                                         </div>

@@ -24,6 +24,6 @@ urlpatterns = [
     path('timesheet/<int:year>/<int:month>/<int:day>', views.timesheet, name="timesheet"),
     path('logout', views.logout_user, name="logout"),
     path('create/user', views.create_user, name="create_user"),
-    path('remove/<int:entry_id>', views.remove, name='remove_entry'),
-    path('edit/<int:entry_id>', views.edit, name='edit_entry'),
+    path('remove/<slug:entry_id>', views.remove, name='remove_entry'),
+    path('edit/<slug:entry_id>', views.edit, name='edit_entry'),
 ]
