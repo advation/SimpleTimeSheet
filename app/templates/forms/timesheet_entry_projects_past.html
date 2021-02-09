@@ -2,10 +2,13 @@
 
 <form action="{% url 'timesheet' year=current_month.year month=current_month.month %}" method="post">
     <div class="row">
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-4">
+            {{ form.day_of_month | as_crispy_field }}
+        </div>
+        <div class="col-sm-12 col-md-4">
             {{ form.hours | as_crispy_field }}
         </div>
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-4">
             {{ form.minutes | as_crispy_field }}
         </div>
         <div class="col-sm-12 col-md-6">

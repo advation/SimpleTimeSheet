@@ -1,6 +1,8 @@
 from django import forms
 from django.core.validators import RegexValidator, MaxLengthValidator, MinLengthValidator, ValidationError
 from . models import Project, Setting
+from calendar import monthrange
+
 
 numeric = RegexValidator(r'^[0-9+]', 'Only numeric characters.')
 time_max_length = MaxLengthValidator(4, 'Length limit exceeds 4 characters.')
@@ -58,6 +60,32 @@ class CreateUserForm(forms.Form):
 
 
 class TimeEntryForm(forms.Form):
+    project = forms.ModelChoiceField(Project.objects.all(), required=False,
+                                     label="Select a project if applicable (not required)",
+                                     widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
+
+    hours = forms.ChoiceField(required=True, choices=hours,
+                              widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
+    minutes = forms.ChoiceField(required=True, choices=minutes,
+                                widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
+
+
+class PastTimeEntryForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        self.month = kwargs.pop('month')
+        self.year = kwargs.pop('year')
+        super(PastTimeEntryForm, self).__init__(*args, **kwargs)
+
+    def number_of_days(self):
+        days = []
+        r = monthrange(self.year, self.month)
+        print(r)
+        return days
+
+    number_of_days
+
+    day_of_month = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
     project = forms.ModelChoiceField(Project.objects.all(), required=False,
                                      label="Select a project if applicable (not required)",
                                      widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))

@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from . forms import LoginForm, CreateUserForm, TimeEntryForm, SettingsForm
-from django.core.validators import ValidationError
+from . forms import LoginForm, CreateUserForm, TimeEntryForm, SettingsForm, PastTimeEntryForm
 from . models import User, Setting, Entry
 from hashlib import sha256
 import datetime
+from django.template.defaultfilters import date
+from dateutil.relativedelta import relativedelta
 
 
 def hash_pin(pin):
@@ -129,7 +130,40 @@ def home(request):
     return render(request, 'home.html', context=context)
 
 
-def timesheet(request):
+def timesheet(request, year=None, month=None, day=None):
+    date = datetime.datetime.now()
+
+    if year is None:
+        year = date.year
+
+    if month is None:
+        month = date.month
+
+    if month > 12:
+        return redirect('timesheet', year=year, month=12)
+
+    if day is None:
+        day = date.day
+
+    if datetime.date(year=year, month=month, day=day) <= datetime.date.today():
+        show_form = True
+    else:
+        show_form = False
+
+    if datetime.date(year=year, month=month, day=day) < datetime.date.today():
+        show_next = True
+    else:
+        show_next = False
+
+    if datetime.date(year=year, month=month, day=day) == datetime.date.today():
+        today_is_today = True
+    else:
+        today_is_today = False
+
+    current_month = datetime.date(year, month, 1)
+    next_month = current_month + relativedelta(months=+1)
+    previous_month = current_month + relativedelta(months=-1)
+
     if requires_auth(request) is False:
         request.session['authenticated'] = False
         return redirect('home')
@@ -139,10 +173,18 @@ def timesheet(request):
 
     projects = Setting.objects.get(setting='Projects')
 
-    form = TimeEntryForm()
+    if today_is_today:
+        form = TimeEntryForm()
+    else:
+        form = PastTimeEntryForm(month=current_month.month, year=current_month.year)
 
     if request.method == "POST":
-        form = TimeEntryForm(request.POST)
+        # form = TimeEntryForm(request.POST)
+
+        if today_is_today:
+            form = TimeEntryForm(request.POST)
+        else:
+            form = PastTimeEntryForm(request.POST, month=current_month.month, year=current_month.year)
 
         if form.is_valid():
             data = form.cleaned_data
@@ -153,17 +195,22 @@ def timesheet(request):
                 entry = Entry()
                 entry.user = user
                 entry.project = data['project']
-                entry.date = datetime.datetime.now().date()
+                entry.date = datetime.date(year=current_month.year, month=current_month.month, day=current_month.day)
                 entry.hours = data['hours']
                 entry.minutes = data['minutes']
                 entry.save()
-                form = TimeEntryForm()
 
-    entries = Entry.objects.filter(user=user, date__month=datetime.datetime.now().month)
+                # form = TimeEntryForm()
 
-    date = datetime.datetime.now()
+                if today_is_today:
+                    form = TimeEntryForm()
+                else:
+                    form = PastTimeEntryForm(month=current_month.month, year=current_month.year)
+
+    entries = Entry.objects.filter(user=user, date__year=current_month.year, date__month=current_month.month)
+
     max_daily_entries = Setting.objects.get(setting='Max Daily Entries')
-    todays_entries = Entry.objects.filter(user=user, date=date).count()
+    todays_entries = Entry.objects.filter(user=user, date__year=current_month.year, date__month=current_month.month).count()
 
     max_daily_entries_quota = False
 
@@ -191,10 +238,17 @@ def timesheet(request):
         'user': user,
         'form': form,
         'entries': time_entries,
+        'show_form': show_form,
+        'show_next': show_next,
+        'today_is_today': today_is_today,
         'total_time_worked': total_time_worked,
         'max_daily_entries_quota': max_daily_entries_quota,
         'projects': projects.value,
-        'session_timeout': auth_timeout
+        'session_timeout': auth_timeout,
+        'current_month': current_month,
+        'current_month_name': current_month.strftime('%B'),
+        'next_month': next_month,
+        'previous_month': previous_month,
     }
 
     return render(request, 'timesheet.html', context=context)
