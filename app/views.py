@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from . forms import LoginForm, CreateUserForm, TimeEntryForm, SettingsForm, PastTimeEntryForm
+from . forms import LoginForm, CreateUserForm, TimeEntryForm, SettingsForm
 from . models import User, Setting, Entry
 from hashlib import sha256
 import datetime
-from django.template.defaultfilters import date
 from dateutil.relativedelta import relativedelta
+from calendar import monthrange
 
 
 def hash_pin(pin):
@@ -22,6 +22,15 @@ def check_setup():
         return True
     else:
         return False
+
+
+def days_of_month(year, month):
+    r = monthrange(year, month)
+    days = []
+    for day in range(1, r[1]+1):
+        d = datetime.date(year, month, day)
+        days.append({'day': str(day), 'label': d.strftime('%A, %b. %d')})
+    return days
 
 
 def logout_user(request):
@@ -163,6 +172,7 @@ def timesheet(request, year=None, month=None, day=None):
     current_month = datetime.date(year, month, 1)
     next_month = current_month + relativedelta(months=+1)
     previous_month = current_month + relativedelta(months=-1)
+    current_month = datetime.date(year, month, day)
 
     if requires_auth(request) is False:
         request.session['authenticated'] = False
@@ -173,44 +183,35 @@ def timesheet(request, year=None, month=None, day=None):
 
     projects = Setting.objects.get(setting='Projects')
 
-    if today_is_today:
-        form = TimeEntryForm()
-    else:
-        form = PastTimeEntryForm(month=current_month.month, year=current_month.year)
+    form = TimeEntryForm()
+    selected_day = None
 
     if request.method == "POST":
-        # form = TimeEntryForm(request.POST)
-
-        if today_is_today:
-            form = TimeEntryForm(request.POST)
-        else:
-            form = PastTimeEntryForm(request.POST, month=current_month.month, year=current_month.year)
+        form = TimeEntryForm(request.POST)
 
         if form.is_valid():
             data = form.cleaned_data
             if data['hours'] == '0' and data['minutes'] == '0':
-                form.add_error('hours', 'May not be 0 if minutes is 0')
-                form.add_error('minutes', 'May not be 0 if hours is 0')
+                selected_day = data['day_of_month']
+                form.add_error('hours', 'No time worked provided')
+                form.add_error('minutes', 'No time worked provided')
             else:
                 entry = Entry()
                 entry.user = user
                 entry.project = data['project']
-                entry.date = datetime.date(year=current_month.year, month=current_month.month, day=current_month.day)
+                entry.date = datetime.date(year=current_month.year, month=current_month.month,
+                                           day=int(data['day_of_month']))
                 entry.hours = data['hours']
                 entry.minutes = data['minutes']
                 entry.save()
+                form = TimeEntryForm()
 
-                # form = TimeEntryForm()
-
-                if today_is_today:
-                    form = TimeEntryForm()
-                else:
-                    form = PastTimeEntryForm(month=current_month.month, year=current_month.year)
-
-    entries = Entry.objects.filter(user=user, date__year=current_month.year, date__month=current_month.month)
+    entries = Entry.objects.filter(user=user, date__year=current_month.year, date__month=current_month.month)\
+        .order_by('date')
 
     max_daily_entries = Setting.objects.get(setting='Max Daily Entries')
-    todays_entries = Entry.objects.filter(user=user, date__year=current_month.year, date__month=current_month.month).count()
+    todays_entries = Entry.objects.filter(user=user, date__year=current_month.year, date__month=current_month.month)\
+        .count()
 
     max_daily_entries_quota = False
 
@@ -246,9 +247,12 @@ def timesheet(request, year=None, month=None, day=None):
         'projects': projects.value,
         'session_timeout': auth_timeout,
         'current_month': current_month,
+        'current_month_day': str(current_month.day),
         'current_month_name': current_month.strftime('%B'),
         'next_month': next_month,
         'previous_month': previous_month,
+        'days_of_month': days_of_month(current_month.year, current_month.month),
+        'selected_day': selected_day,
     }
 
     return render(request, 'timesheet.html', context=context)

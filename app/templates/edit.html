@@ -7,7 +7,7 @@
             <h2>{{ user.first_name | title }} {{ user.last_name | title }}</h2>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6 text-sm-center text-lg-end">
-            <a href="#!" class="btn btn-lg btn-secondary"><span class="oi" data-glyph="arrow-thick-left"></span> Back</a>
+            <a href="{% url 'timesheet' year=entry.date.year month=entry.date.month %}" class="btn btn-lg btn-secondary"><span class="oi" data-glyph="arrow-thick-left"></span> Back</a>
         </div>
     </div>
 

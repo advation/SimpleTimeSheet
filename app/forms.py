@@ -3,7 +3,6 @@ from django.core.validators import RegexValidator, MaxLengthValidator, MinLength
 from . models import Project, Setting
 from calendar import monthrange
 
-
 numeric = RegexValidator(r'^[0-9+]', 'Only numeric characters.')
 time_max_length = MaxLengthValidator(4, 'Length limit exceeds 4 characters.')
 max_daily_hours_length = MaxLengthValidator(2, 'Only 2 place values allowed.')
@@ -35,6 +34,39 @@ except Exception as e:
     for hour in range(0, 9):
         hours.append(("%i" % hour, "%i" % hour))
 
+days = (
+    ('1', '1'),
+    ('2', '2'),
+    ('3', '3'),
+    ('4', '4'),
+    ('5', '5'),
+    ('6', '6'),
+    ('7', '7'),
+    ('8', '8'),
+    ('9', '9'),
+    ('10', '10'),
+    ('11', '11'),
+    ('12', '12'),
+    ('13', '13'),
+    ('14', '14'),
+    ('15', '15'),
+    ('16', '16'),
+    ('17', '17'),
+    ('18', '18'),
+    ('19', '19'),
+    ('20', '20'),
+    ('21', '21'),
+    ('22', '22'),
+    ('23', '23'),
+    ('24', '24'),
+    ('25', '25'),
+    ('26', '26'),
+    ('27', '27'),
+    ('28', '28'),
+    ('29', '29'),
+    ('30', '30'),
+    ('31', '31')
+)
 
 minutes = (
     ('0', '00'),
@@ -60,32 +92,7 @@ class CreateUserForm(forms.Form):
 
 
 class TimeEntryForm(forms.Form):
-    project = forms.ModelChoiceField(Project.objects.all(), required=False,
-                                     label="Select a project if applicable (not required)",
-                                     widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
-
-    hours = forms.ChoiceField(required=True, choices=hours,
-                              widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
-    minutes = forms.ChoiceField(required=True, choices=minutes,
-                                widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
-
-
-class PastTimeEntryForm(forms.Form):
-
-    def __init__(self, *args, **kwargs):
-        self.month = kwargs.pop('month')
-        self.year = kwargs.pop('year')
-        super(PastTimeEntryForm, self).__init__(*args, **kwargs)
-
-    def number_of_days(self):
-        days = []
-        r = monthrange(self.year, self.month)
-        print(r)
-        return days
-
-    number_of_days
-
-    day_of_month = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
+    day_of_month = forms.ChoiceField(choices=days, widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))
     project = forms.ModelChoiceField(Project.objects.all(), required=False,
                                      label="Select a project if applicable (not required)",
                                      widget=forms.Select(attrs={'class': 'form-control form-control-lg'}))

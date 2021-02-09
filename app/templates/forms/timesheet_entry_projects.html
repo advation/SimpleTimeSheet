@@ -1,11 +1,28 @@
 {% load crispy_forms_tags %}
-
 <form action="{% url 'timesheet' year=current_month.year month=current_month.month %}" method="post">
     <div class="row">
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-4">
+            <label class="form-label" for="day_of_month">Day of month*</label>
+            <select id="day_of_month" name="day_of_month" class="form-control form-control-lg {% if form.day_of_month.errors %}is-invalid{% endif %}">
+                <option value="Blank">---</option>
+                {% for day in days_of_month %}
+                    {% if selected_day == day.day %}
+                        <option value="{{ day.day }}" selected>{{ day.label }}</option>
+                    {% else %}
+                        <option value="{{ day.day }}">{{ day.label }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            {% if form.day_of_month.errors %}
+                {% for error in form.day_of_month.errors %}
+                    <p class="invalid-feedback"><strong>{{ error }}</strong></p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="col-sm-12 col-md-4">
             {{ form.hours | as_crispy_field }}
         </div>
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-4">
             {{ form.minutes | as_crispy_field }}
         </div>
         <div class="col-sm-12 col-md-6">

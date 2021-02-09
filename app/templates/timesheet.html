@@ -16,13 +16,13 @@
     </div>
 
     <div class="row">
-        <div class="col-4">
+        <div class="col-2">
             <a class="btn btn-lg btn-light border" href="{% url 'timesheet' year=previous_month.year month=previous_month.month %}"><span class="oi" data-glyph="chevron-left"></span></a>
         </div>
-        <div class="col-4 text-center">
+        <div class="col-8 text-center">
             <h1>{{ current_month_name }} {{ current_month.year }}</h1>
         </div>
-        <div class="col-4 text-end">
+        <div class="col-2 text-end">
             {% if show_next %}
                 <a class="btn btn-lg btn-light border" href="{% url 'timesheet' year=next_month.year month=next_month.month %}"><span class="oi" data-glyph="chevron-right"></span></a>
             {% else %}
@@ -31,46 +31,30 @@
         </div>
     </div>
     {% if show_form %}
-        {% if today_is_today %}
-            {% if max_daily_entries_quota == False %}
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            {% if projects == "True" %}
-                                {% include 'forms/timesheet_entry_projects.html' %}
-                            {% else %}
-                                {% include 'forms/timesheet_entry.html' %}
-                            {% endif %}
-                        </div>
+        {% if max_daily_entries_quota == False %}
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        {% if projects == "True" %}
+                            {% include 'forms/timesheet_entry_projects.html' %}
+                        {% else %}
+                            {% include 'forms/timesheet_entry.html' %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            {% else %}
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <p class="lead pt-1"><span class="oi" data-glyph="warning"></span> Maximum daily entries met.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+        </div>
         {% else %}
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            {% if projects == "True" %}
-                                {% include 'forms/timesheet_entry_projects_past.html' %}
-                            {% else %}
-                                {% include 'forms/timesheet_entry_past.html' %}
-                            {% endif %}
-                        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="lead pt-1"><span class="oi" data-glyph="warning"></span> Maximum daily entries met.</p>
                     </div>
                 </div>
             </div>
+        </div>
         {% endif %}
     {% endif %}
 
